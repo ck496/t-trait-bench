@@ -1,10 +1,10 @@
 #!/bin/bash
-#SBATCH --partition=public
+#SBATCH --partition=general
 #SBATCH --qos=class
 #SBATCH -t 0-08:00:00
 #SBATCH -c 16
 #SBATCH --mem=80GB
-#SBATCH --gres=gpu:a100:3
+#SBATCH --gres=gpu:h100:3
 #SBATCH -J ttrait_8b_pathb
 #SBATCH -o /scratch/ckurian/tau-trait/logs/slurm/ttrait_pathb_%j.out
 #SBATCH -e /scratch/ckurian/tau-trait/logs/slurm/ttrait_pathb_%j.err

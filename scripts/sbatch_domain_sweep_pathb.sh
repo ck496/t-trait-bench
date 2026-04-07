@@ -1,10 +1,10 @@
 #!/bin/bash
-#SBATCH --partition=public
+#SBATCH --partition=general
 #SBATCH --qos=class
 #SBATCH -t 0-08:00:00
 #SBATCH -c 16
 #SBATCH --mem=80GB
-#SBATCH --gres=gpu:a100:3
+#SBATCH --gres=gpu:h100:3
 #SBATCH -J ttrait_sweep
 #SBATCH -o /scratch/ckurian/tau-trait/logs/slurm/sweep_%j.out
 #SBATCH -e /scratch/ckurian/tau-trait/logs/slurm/sweep_%j.err
@@ -17,6 +17,9 @@ set -euo pipefail
 # Usage:
 #   sbatch --export=ALL,DOMAIN=airline scripts/sbatch_domain_sweep_pathb.sh
 #   sbatch --export=ALL,DOMAIN=retail,NUM_TRIALS=3 scripts/sbatch_domain_sweep_pathb.sh
+#
+# Override partition/GPU at submit time (no script edits needed):
+#   sbatch --partition=public --gres=gpu:a100:3 --export=ALL,DOMAIN=airline scripts/sbatch_domain_sweep_pathb.sh
 
 mkdir -p /scratch/ckurian/tau-trait/logs/slurm /scratch/ckurian/tau-trait/logs/vllm
 
