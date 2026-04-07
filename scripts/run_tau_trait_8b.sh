@@ -23,10 +23,9 @@ set -euo pipefail
 #   PORT_USER=8006            vLLM user port (only if USE_STEER=false)
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TAU_TRAIT_DIR="$(dirname "${SCRIPT_DIR}")"
 
-# If tau-trait repo is elsewhere (e.g., on Sol scratch), override:
-TAU_TRAIT_DIR="${TAU_TRAIT_DIR:-/scratch/ckurian/tau-trait}"
+# Allow env var override; fall back to parent of scripts dir
+TAU_TRAIT_DIR="${TAU_TRAIT_DIR:-$(dirname "${SCRIPT_DIR}")}"
 
 # ── Arguments ────────────────────────────────────────────────────────────
 DOMAIN="${1:?Usage: $0 <DOMAIN> <TRAIT> [NUM_TRIALS]}"

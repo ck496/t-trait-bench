@@ -31,7 +31,7 @@ mkdir -p /scratch/ckurian/tau-trait/logs/slurm /scratch/ckurian/tau-trait/logs/v
 
 # ── Defaults ─────────────────────────────────────────────────────────────
 SCRIPT_DIR="/scratch/ckurian/tau-trait/scripts"
-PID_FILE="${SCRIPT_DIR}/vllm_tau_trait_pathb_pids.txt"
+PID_FILE="/scratch/ckurian/tau-trait/logs/vllm/pids_pathb_${SLURM_JOB_ID:-$$}.txt"
 
 DOMAIN="${DOMAIN:-airline}"
 TRAIT="${TRAIT:-baseline}"
@@ -94,6 +94,7 @@ echo "============================================"
 echo "Job complete: ${DOMAIN} × ${TRAIT} × ${NUM_TRIALS} trials (Path B)"
 echo "SLURM Job ID: ${SLURM_JOB_ID:-N/A}"
 echo "Check outputs:"
-echo "  /scratch/ckurian/tau-trait/logs/ttrait_pathb_${SLURM_JOB_ID:-N/A}.out"
+echo "  /scratch/ckurian/tau-trait/logs/slurm/ttrait_pathb_${SLURM_JOB_ID:-N/A}.out"
+echo "  /scratch/ckurian/tau-trait/logs/slurm/ttrait_pathb_${SLURM_JOB_ID:-N/A}.err"
 echo "  /scratch/ckurian/tau-trait/results/fc_${DOMAIN}_${TRAIT}_8b/"
 echo "============================================"

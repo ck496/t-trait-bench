@@ -1,5 +1,6 @@
 #!/bin/bash
 #SBATCH --partition=public
+#SBATCH --qos=class
 #SBATCH -t 0-08:00:00
 #SBATCH -c 8
 #SBATCH --mem=40GB
@@ -31,7 +32,7 @@ mkdir -p /scratch/ckurian/tau-trait/logs/slurm /scratch/ckurian/tau-trait/logs/v
 
 # ── Defaults ─────────────────────────────────────────────────────────────
 SCRIPT_DIR="/scratch/ckurian/tau-trait/scripts"
-PID_FILE="${SCRIPT_DIR}/vllm_tau_trait_pids.txt"
+PID_FILE="/scratch/ckurian/tau-trait/logs/vllm/pids_${SLURM_JOB_ID:-$$}.txt"
 
 DOMAIN="${DOMAIN:-airline}"
 TRAIT="${TRAIT:-baseline}"
@@ -111,7 +112,7 @@ echo "============================================"
 echo "Job complete: ${DOMAIN} × ${TRAIT} × ${NUM_TRIALS} trials"
 echo "SLURM Job ID: ${SLURM_JOB_ID:-N/A}"
 echo "Check outputs:"
-echo "  /scratch/ckurian/tau-trait/logs/ttrait_${SLURM_JOB_ID:-N/A}.out"
-echo "  /scratch/ckurian/tau-trait/logs/ttrait_${SLURM_JOB_ID:-N/A}.err"
+echo "  /scratch/ckurian/tau-trait/logs/slurm/ttrait_${SLURM_JOB_ID:-N/A}.out"
+echo "  /scratch/ckurian/tau-trait/logs/slurm/ttrait_${SLURM_JOB_ID:-N/A}.err"
 echo "  /scratch/ckurian/tau-trait/results/fc_${DOMAIN}_${TRAIT}_8b/"
 echo "============================================"

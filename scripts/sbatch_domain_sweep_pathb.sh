@@ -22,7 +22,7 @@ mkdir -p /scratch/ckurian/tau-trait/logs/slurm /scratch/ckurian/tau-trait/logs/v
 
 # ── Defaults ─────────────────────────────────────────────────────────────
 SCRIPT_DIR="/scratch/ckurian/tau-trait/scripts"
-PID_FILE="${SCRIPT_DIR}/vllm_sweep_${SLURM_JOB_ID:-$$}_pids.txt"
+PID_FILE="/scratch/ckurian/tau-trait/logs/vllm/pids_sweep_${SLURM_JOB_ID:-$$}.txt"
 
 DOMAIN="${DOMAIN:?ERROR: DOMAIN not set. Use --export=ALL,DOMAIN=airline}"
 NUM_TRIALS="${NUM_TRIALS:-5}"
