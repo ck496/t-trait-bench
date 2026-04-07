@@ -5,8 +5,8 @@
 #SBATCH --mem=40GB
 #SBATCH --gres=gpu:a100:1
 #SBATCH -J ttrait_8b
-#SBATCH -o /scratch/ckurian/tau-trait/logs/ttrait_%j.out
-#SBATCH -e /scratch/ckurian/tau-trait/logs/ttrait_%j.err
+#SBATCH -o /scratch/ckurian/tau-trait/logs/slurm/ttrait_%j.out
+#SBATCH -e /scratch/ckurian/tau-trait/logs/slurm/ttrait_%j.err
 
 set -euo pipefail
 
@@ -27,7 +27,7 @@ set -euo pipefail
 #   MAX_CONCURRENCY=1       Max parallel tasks in tau-trait
 
 # ── Ensure log directory exists ─────────────────────────────────────────
-mkdir -p /scratch/ckurian/tau-trait/logs
+mkdir -p /scratch/ckurian/tau-trait/logs/slurm /scratch/ckurian/tau-trait/logs/vllm
 
 # ── Defaults ─────────────────────────────────────────────────────────────
 SCRIPT_DIR="/scratch/ckurian/tau-trait/scripts"

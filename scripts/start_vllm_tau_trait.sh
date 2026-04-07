@@ -14,10 +14,15 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "${SCRIPT_DIR}")"
 
+# ── Log directory ────────────────────────────────────────────────────────
+RUN_ID="${SLURM_JOB_ID:-$(date +%Y%m%d_%H%M%S)}"
+VLLM_LOG_DIR="${VLLM_LOG_DIR:-${PROJECT_DIR}/logs/vllm}"
+mkdir -p "${VLLM_LOG_DIR}"
+
 # ── Configurable ─────────────────────────────────────────────────────────
 PORT_AGENT="${PORT_AGENT:-8005}"
 GPU_AGENT="${GPU_AGENT:-0}"
-PID_FILE="${PID_FILE:-${SCRIPT_DIR}/vllm_tau_trait_pids.txt}"
+PID_FILE="${PID_FILE:-${VLLM_LOG_DIR}/pids_${RUN_ID}.txt}"
 MODEL_8B_PATH="${MODEL_8B_PATH:-Qwen/Qwen3-8B-Instruct-2507}"
 
 # ── Environment ──────────────────────────────────────────────────────────
@@ -29,6 +34,7 @@ echo "============================================"
 echo "Model:    ${MODEL_8B_PATH}"
 echo "Port:     ${PORT_AGENT}"
 echo "GPU:      ${GPU_AGENT}"
+echo "Log:      ${VLLM_LOG_DIR}/agent_${RUN_ID}.log"
 echo "PID file: ${PID_FILE}"
 echo "HF cache: ${HF_HOME}"
 echo "============================================"
@@ -62,7 +68,7 @@ CUDA_VISIBLE_DEVICES="${GPU_AGENT}" vllm serve "${MODEL_8B_PATH}" \
     --enable-auto-tool-choice \
     --tool-call-parser hermes \
     --served-model-name Qwen3-8B \
-> "${SCRIPT_DIR}/vllm_agent.log" 2>&1 &
+> "${VLLM_LOG_DIR}/agent_${RUN_ID}.log" 2>&1 &
 PID_AGENT=$!
 echo "Agent PID: ${PID_AGENT}"
 
@@ -84,7 +90,7 @@ while ! curl -sf "http://127.0.0.1:${PORT_AGENT}/health" >/dev/null 2>&1; do
     if ! kill -0 "${PID_AGENT}" 2>/dev/null; then
         echo ""
         echo "ERROR: vLLM server crashed! Last 30 lines of log:"
-        tail -30 "${SCRIPT_DIR}/vllm_agent.log"
+        tail -30 "${VLLM_LOG_DIR}/agent_${RUN_ID}.log"
         exit 1
     fi
 
@@ -93,7 +99,7 @@ while ! curl -sf "http://127.0.0.1:${PORT_AGENT}/health" >/dev/null 2>&1; do
         echo ""
         echo "ERROR: Timed out waiting for vLLM server (${MAX_WAIT}s)"
         echo "Last 20 lines of log:"
-        tail -20 "${SCRIPT_DIR}/vllm_agent.log"
+        tail -20 "${VLLM_LOG_DIR}/agent_${RUN_ID}.log"
         kill "${PID_AGENT}" 2>/dev/null || true
         exit 1
     fi

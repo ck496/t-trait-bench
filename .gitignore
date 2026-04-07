@@ -1,0 +1,40 @@
+# --- Python & Environments ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.python-version
+# Ignore your specific Mamba/Conda environments if they are local
+.conda/
+
+# --- Project Specifics (τ-trait) ---
+# Ignore the environment file we created for API keys
+.tau_trait_env
+.env
+.env.local
+
+# --- Machine Learning & Large Files ---
+# Never commit model weights or massive datasets
+*.bin
+*.pth
+*.onnx
+*.joblib
+# Specifically ignore the HuggingFace cache if it's inside your repo
+.cache/
+
+# --- Slurm & Cluster Logs ---
+# Slurm output files (e.g., slurm-12345.out)
+
+
+# --- VS Code & OS ---
+.vscode/
+.DS_Store
+Thumbs.db
+
+# --- Submodules ---
+# Note: Git tracks the submodule "link" automatically. 
+# You don't need to ignore the folder 'tau-trait' itself 
+# unless you want to ignore the entire nested repo.
