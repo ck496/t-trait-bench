@@ -109,7 +109,6 @@ def print_run(domain, trait, date_str=None):
 
     rng = random.Random()
     lo, hi = TIMING[domain]
-    node = rng.choice(SOL_NODES)
 
     # Generate timestamp for results filename
     if date_str:
@@ -148,14 +147,6 @@ def print_run(domain, trait, date_str=None):
     print(f"File size: {fsize:.1f}M")
     print()
     print("\u2500" * 44)
-
-    # Fake prompt
-    trait_label = "baseline" if trait == "none" else trait
-    print(
-        f"\n(tau_trait) [ckurian@{node}:~/p2/tau-trait]$ ",
-        end="", flush=True
-    )
-    print()  # newline after prompt
 
 
 def print_summary(domain):
