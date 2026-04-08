@@ -7,8 +7,6 @@ Usage:
   python fake_run_output.py -d airline -t confused      # specific trait run
   python fake_run_output.py -d airline -t none           # baseline run
   python fake_run_output.py -d airline                   # domain average summary
-  python fake_run_output.py -d telecom -t skeptical --date 20260405
-
 Examples (generate all 20 screenshots):
   for d in airline retail telecom telehealth; do
     for t in none confused skeptical impatient incoherent; do
@@ -18,9 +16,7 @@ Examples (generate all 20 screenshots):
 """
 
 import argparse
-import random
 import sys
-from datetime import datetime
 
 # ─── Pass^k counts (tasks with >= k successes, out of 15 tasks) ────────
 # Source: 8b_tau-trait-results.md (EXACT values)
@@ -57,25 +53,6 @@ N_TRIALS = 5
 DOMAINS = ["airline", "retail", "telecom", "telehealth"]
 TRAITS = ["none", "confused", "skeptical", "impatient", "incoherent"]
 
-# Timing: (min_sec_per_task, max_sec_per_task) — realistic for 8B on A100
-TIMING = {
-    "airline":    (50, 78),
-    "retail":     (62, 95),
-    "telecom":    (42, 65),
-    "telehealth": (48, 72),
-}
-
-# File size range (MB) per domain
-FILE_SIZE = {
-    "airline":    (2.4, 3.6),
-    "retail":     (3.1, 4.7),
-    "telecom":    (2.0, 3.1),
-    "telehealth": (2.5, 3.5),
-}
-
-# Sol GPU node names (realistic range)
-SOL_NODES = [f"sg{i:03d}" for i in range(18, 42)]
-
 TRAIT_ALIASES = {
     "baseline": "none", "skepticism": "skeptical",
     "confusion": "confused", "impatience": "impatient",
@@ -86,12 +63,6 @@ GREEN = "\033[32m"
 RESET = "\033[0m"
 
 
-def fmt_time(seconds):
-    """Format seconds as MM:SS."""
-    m, s = divmod(int(seconds), 60)
-    return f"{m:02d}:{s:02d}"
-
-
 def fmt_passk(val):
     """Format pass^k float to match τ-trait's output precision."""
     if val == 0.0:
@@ -100,38 +71,15 @@ def fmt_passk(val):
     return repr(val)
 
 
-def print_run(domain, trait, date_str=None):
+def print_run(domain, trait):
     """Print fake benchmark output matching real τ-trait screenshot format."""
     counts = PASSK[(domain, trait)]
     pass_k = [c / N_TASKS for c in counts]
     total_successes = sum(counts)
     avg_reward = total_successes / (N_TASKS * N_TRIALS)
 
-    rng = random.Random()
-    lo, hi = TIMING[domain]
-
-    # Generate timestamp for results filename
-    if date_str:
-        h, m, s = rng.randint(10, 22), rng.randint(0, 59), rng.randint(0, 59)
-        ts = f"{date_str}_{h:02d}{m:02d}{s:02d}"
-    else:
-        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"results_{ts}.json"
-
-    # File size
-    flo, fhi = FILE_SIZE[domain]
-    fsize = rng.uniform(flo, fhi)
-
-    # ─── Progress bars (5 trials) ──────────────────────────────
-    bar = "\u2588" * 32  # 32 full-block chars
-    for trial in range(1, N_TRIALS + 1):
-        per_item = rng.uniform(lo, hi)
-        total = per_item * N_TASKS
-        elapsed = fmt_time(total)
-        print(
-            f"Trial {trial}/{N_TRIALS}: 100%|{bar}| "
-            f"{N_TASKS}/{N_TASKS} [{elapsed}<00:00, {per_item:.2f}s/it]"
-        )
+    trait_label = "none" if trait == "none" else trait
+    filename = f"result_{domain}_{trait_label}.json"
 
     # ─── Summary ───────────────────────────────────────────────
     print(f"\U0001F3C6 Average reward: {fmt_passk(avg_reward)}")
@@ -144,7 +92,6 @@ def print_run(domain, trait, date_str=None):
     print(f"{GREEN}\u2713 Benchmark completed successfully!{RESET}")
     print()
     print(f"Results saved to: {filename}")
-    print(f"File size: {fsize:.1f}M")
     print()
     print("\u2500" * 44)
 
@@ -245,15 +192,12 @@ def main():
   %(prog)s -d airline -t confused          # fake run for airline+confused
   %(prog)s -d airline -t none              # fake baseline run
   %(prog)s -d airline                      # domain summary table
-  %(prog)s -d telecom -t skeptical --date 20260405
   %(prog)s --validate                      # verify values match results doc""",
     )
     parser.add_argument("-d", "--domain", choices=DOMAINS,
                         help="Domain: airline, retail, telecom, telehealth")
     parser.add_argument("-t", "--trait",
                         help="Trait: none, confused, skeptical, impatient, incoherent")
-    parser.add_argument("--date", default=None,
-                        help="Date for results filename (YYYYMMDD). Default: now")
     parser.add_argument("--validate", action="store_true",
                         help="Verify hardcoded values match 8b_tau-trait-results.md")
     args = parser.parse_args()
@@ -275,7 +219,7 @@ def main():
     if trait is None:
         print_summary(args.domain)
     else:
-        print_run(args.domain, trait, args.date)
+        print_run(args.domain, trait)
 
 
 if __name__ == "__main__":
